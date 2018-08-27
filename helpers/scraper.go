@@ -64,13 +64,14 @@ func parseContent(block *goquery.Selection) string {
 	text := ""
 	block.Each(func(_ int, s *goquery.Selection) {
 		frameURL, existFrame := s.Find("iframe").Attr("src")
+		imageURL, existImage := s.Find("img").Attr("src")
 
-		if existFrame {
+		if existImage {
+			image := "https://bits.media" + imageURL
+			text += fmt.Sprintf("<figure><img src='%s'></figure>", image)
+		} else if existFrame {
 			text += createVideoFrame(frameURL)
-			s.Find("iframe").First().Remove()
-		}
-
-		if goquery.NodeName(s) == "#text" {
+		} else if goquery.NodeName(s) == "#text" {
 			if len(s.Text()) > 0 {
 				text += strings.TrimSpace(s.Text()) + " "
 			}
